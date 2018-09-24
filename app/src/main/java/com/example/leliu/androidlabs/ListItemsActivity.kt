@@ -10,7 +10,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Switch
+import android.app.AlertDialog
 import android.widget.Toast
+import android.widget.CheckBox
 import kotlinx.android.synthetic.main.activity_list_items.*
 import android.widget.CompoundButton
 
@@ -35,7 +37,7 @@ class ListItemsActivity : Activity() {
         })
 
         var switchButton = findViewById<Switch>(R.id.switch2)
-        switchButton.setOnCheckedChangeListener { _, isChecked ->
+        switchButton.setOnCheckedChangeListener { anyname, isChecked ->
 
             if (isChecked) {
                 val text = "Switch is On"
@@ -47,6 +49,30 @@ class ListItemsActivity : Activity() {
                 val duration = Toast.LENGTH_SHORT
                 val toast = Toast.makeText(this , text, duration)
                         toast.show()
+            }
+        }
+
+        var checkBoxButton=findViewById<CheckBox>(R.id.checkBox3)
+        checkBoxButton.setOnCheckedChangeListener{_, isChecked ->
+            if(isChecked){
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage(R.string.dialog_message)
+                        .setTitle(R.string.dialog_title)
+                        .setPositiveButton(R.string.ok, { dialog, id ->
+
+                            // User clicked OK button
+                            val resultIntent = Intent( )
+                            resultIntent.putExtra("Response", "Here is my response")
+                            setResult(Activity.RESULT_OK, resultIntent)
+                            finish()
+
+                        })
+                        .setNegativeButton(R.string.cancel, {dialog, id ->
+                            // User cancelled the dialog
+                        })
+                        .show()
+
+
             }
         }
 

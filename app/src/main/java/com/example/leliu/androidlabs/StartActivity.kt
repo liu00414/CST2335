@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
+
 
 class StartActivity : Activity() {
     val ACTIVITY_NAME = "MainActivity"
@@ -53,9 +55,19 @@ class StartActivity : Activity() {
         Log.i(ACTIVITY_NAME,"In onDestroy()")
     }
 
-    override fun onActivityResult(request:Int, result:Int, dat:Intent?)
+    override fun onActivityResult(request:Int, result:Int, data:Intent)
     {
-        if (request==50) {Log.i("ACTIVITY_NAME", "Returned to StartActivity.onActivityResult")}
+        if (request==50) {
+            Log.i("ACTIVITY_NAME", "Returned to StartActivity.onActivityResult")
+
+            if (result == Activity.RESULT_OK) {
+                val messagePassed = data.getStringExtra("Response")
+                val duration = Toast.LENGTH_SHORT
+                val toast = Toast.makeText(this, messagePassed, duration)
+                toast.show()
+                Log.i("ACTIVITY_NAME", "Returned to StartActivity.onActivityResult")
+            }
+        }
     }
 
 }
