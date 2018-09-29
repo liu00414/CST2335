@@ -18,8 +18,14 @@ class StartActivity : Activity() {
         var button3 = findViewById(R.id.button3) as? Button
         button3?.setOnClickListener(View.OnClickListener {
 
-            val newActivity = Intent( this, ListItemsActivity::class.java);
+            val newActivity = Intent( this, ListItemsActivity::class.java)
             startActivityForResult(newActivity, 50)
+        })
+        val buttonChat=findViewById<Button>(R.id.button2)
+        buttonChat?.setOnClickListener(View.OnClickListener{
+            Log.i(ACTIVITY_NAME, "User clicked Start Chat")
+            val intent = Intent(this, ChatWindowActivity::class.java )
+            startActivityForResult(intent, 50)
         })
     }
 
@@ -69,5 +75,4 @@ class StartActivity : Activity() {
             }
         }
     }
-
 }
