@@ -22,8 +22,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListItemsActivity" />
-        <activity android:name=".ChatWindow"></activity>
+
         <activity android:name=".ChatWindowActivity"></activity>
     </application>
 
 </manifest>
+

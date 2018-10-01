@@ -10,12 +10,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        app:srcCompat="@drawable/row_even" />
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:src="@drawable/row_even" />
 
     <TextView
         android:id="@+id/message_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:layout_weight="1"
         android:text="TextView" />
 </LinearLayout>
