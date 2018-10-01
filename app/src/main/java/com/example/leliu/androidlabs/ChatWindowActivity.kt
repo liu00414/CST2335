@@ -43,7 +43,7 @@ class ChatWindowActivity : Activity() {
             var chatMsg= (chatInputText.getText()).toString()
             chatList.add(chatMsg)
             messageAdapter.notifyDataSetChanged()
-//            //chatInputText.setText("")
+            chatInputText.setText("")
         })
 //
         listView.setAdapter(messageAdapter);
@@ -74,6 +74,41 @@ class ChatWindowActivity : Activity() {
             return 0
         }
     }
+
+
+    //This gets called after onCreate()
+
+    override fun onStart()
+    {
+        super.onStart()
+        Log.i(ACTIVITY_NAME, "In onStart()")
+    }
+
+
+    //This gets called after onStart()
+
+    override fun onResume()
+    {
+        super.onResume()
+        Log.i(ACTIVITY_NAME, "In OnResume()")
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i(ACTIVITY_NAME,"In onPause()")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.i(ACTIVITY_NAME,"In onStop()")
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(ACTIVITY_NAME,"In onDestroy()")
+    }
+
+
 
 
 }

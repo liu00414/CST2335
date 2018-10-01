@@ -61,13 +61,13 @@ class StartActivity : Activity() {
         Log.i(ACTIVITY_NAME,"In onDestroy()")
     }
 
-    override fun onActivityResult(request:Int, result:Int, data:Intent)
+    override fun onActivityResult(request:Int, result:Int, data:Intent?)
     {
         if (request==50) {
             Log.i("ACTIVITY_NAME", "Returned to StartActivity.onActivityResult")
 
             if (result == Activity.RESULT_OK) {
-                val messagePassed = data.getStringExtra("Response")
+                val messagePassed = data?.getStringExtra("Response")
                 val duration = Toast.LENGTH_SHORT
                 val toast = Toast.makeText(this, messagePassed, duration)
                 toast.show()
