@@ -9,10 +9,13 @@ package com.example.leliu.androidlabs
 
 
 import android.app.Activity
+import android.content.ContentValues
 import android.os.Bundle
 import android.widget.*
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +33,25 @@ class ChatWindowActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_window2)
 
+
+        val dbHelper=ChatDatabaseHelper()
+        val db= dbHelper.writableDatabase
+        val results= db.query(TABLE_NAME, arrayOf("_id",KEY_MESSAGES), null,null,null,null,null,null)
+        val numberRows=results.getCount()
+        results.moveToFirst()//point to first row ro read
+        val idIndex= results.getColumnIndex("_id")
+        val msgIndex=results.getColumnIndex(KEY_MESSAGES)
+        while (!results.isAfterLast()){
+            var thisId = results.getInt(idIndex)
+            var thisMsg=results.getString(msgIndex)
+            chatList.add(thisMsg)
+
+            results.moveToNext()//look at next row in the table
+
+        }
+
+
+
         var listView=findViewById<ListView>(R.id.chatView)
         var chatInputText=findViewById<EditText>(R.id.editText5)
         var sendButton=findViewById<Button>(R.id.sendButton)
@@ -42,6 +64,16 @@ class ChatWindowActivity : Activity() {
             Log.i(ACTIVITY_NAME,"CLICK SEND")
             var chatMsg= (chatInputText.getText()).toString()
             chatList.add(chatMsg)
+
+            //write to database
+            val newRow=ContentValues()
+            newRow.put(KEY_MESSAGES,chatMsg)
+
+            db.insert(TABLE_NAME,"",newRow)
+
+
+
+
             messageAdapter.notifyDataSetChanged()
             chatInputText.setText("")
         })
@@ -74,6 +106,26 @@ class ChatWindowActivity : Activity() {
             return 0
         }
     }
+
+    val VERSION_NUM=2
+    val DATABASE_NAME = "Message_db"
+    val TABLE_NAME="Messages"
+    val KEY_MESSAGES="Messages"
+    inner class ChatDatabaseHelper : SQLiteOpenHelper( this@ChatWindowActivity, DATABASE_NAME, null, VERSION_NUM){
+        override fun onCreate(db: SQLiteDatabase) {
+            db.execSQL("CREATE TABLE "+TABLE_NAME +
+                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, "+ KEY_MESSAGES + " TEXT)") //create table
+
+
+        }
+
+        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+                db.execSQL("DROP TABLE IF EXISTS "+ TABLE_NAME )//delete table
+                //create new one
+                onCreate(db)
+            }
+    }
+
 
 
     //This gets called after onCreate()
