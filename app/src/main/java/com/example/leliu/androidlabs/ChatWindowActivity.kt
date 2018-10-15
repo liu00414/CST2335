@@ -38,15 +38,27 @@ class ChatWindowActivity : Activity() {
         val db= dbHelper.writableDatabase
         val results= db.query(TABLE_NAME, arrayOf("_id",KEY_MESSAGES), null,null,null,null,null,null)
         val numberRows=results.getCount()
+
         results.moveToFirst()//point to first row ro read
         val idIndex= results.getColumnIndex("_id")
         val msgIndex=results.getColumnIndex(KEY_MESSAGES)
         while (!results.isAfterLast()){
             var thisId = results.getInt(idIndex)
             var thisMsg=results.getString(msgIndex)
+            Log.i(ACTIVITY_NAME,"SQL MESSAGE:" + results.getString(msgIndex))
+            Log.i(ACTIVITY_NAME, "Cursor’s  column count =" + results.getColumnCount())
+            var columnIndex=results.getColumnCount()-1
+            while (columnIndex>=0){
+                Log.i(ACTIVITY_NAME, "Column Name: "+results.getColumnName(columnIndex))
+                columnIndex -= 1
+            }
+
+
+
             chatList.add(thisMsg)
 
             results.moveToNext()//look at next row in the table
+
 
         }
 
@@ -107,19 +119,20 @@ class ChatWindowActivity : Activity() {
         }
     }
 
-    val VERSION_NUM=2
+    val VERSION_NUM=3
     val DATABASE_NAME = "Message_db"
     val TABLE_NAME="Messages"
     val KEY_MESSAGES="Messages"
     inner class ChatDatabaseHelper : SQLiteOpenHelper( this@ChatWindowActivity, DATABASE_NAME, null, VERSION_NUM){
         override fun onCreate(db: SQLiteDatabase) {
+            Log.i("ChatDatabaseHelper", "Calling onCreate")
             db.execSQL("CREATE TABLE "+TABLE_NAME +
                     "(_id INTEGER PRIMARY KEY AUTOINCREMENT, "+ KEY_MESSAGES + " TEXT)") //create table
-
 
         }
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+            Log.i("ChatDatabaseHelper", "Calling onUpgrade, oldVersion=" + oldVersion + "newVersion=" + newVersion)
                 db.execSQL("DROP TABLE IF EXISTS "+ TABLE_NAME )//delete table
                 //create new one
                 onCreate(db)
