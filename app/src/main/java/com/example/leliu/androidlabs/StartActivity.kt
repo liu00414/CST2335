@@ -27,6 +27,12 @@ class StartActivity : Activity() {
             val intent = Intent(this, ChatWindowActivity::class.java )
             startActivityForResult(intent, 50)
         })
+
+        val buttonWeather=findViewById<Button>(R.id.weatherForecast)
+        buttonWeather?.setOnClickListener(View.OnClickListener{
+            val intent = Intent(this, WeatherForecast::class.java )
+            startActivityForResult(intent, 50)
+        })
     }
 
     //This gets called after onCreate()

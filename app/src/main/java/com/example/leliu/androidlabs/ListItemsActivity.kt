@@ -63,7 +63,7 @@ class ListItemsActivity : Activity() {
                             // User clicked OK button
                             val resultIntent = Intent( )
                             resultIntent.putExtra("Response", "Here is my response")
-                            setResult(Activity.RESULT_OK, resultIntent)
+
                             finish()
 
                         })
