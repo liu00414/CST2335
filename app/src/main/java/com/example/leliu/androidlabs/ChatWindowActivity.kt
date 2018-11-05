@@ -16,6 +16,7 @@ import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +33,11 @@ class ChatWindowActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_window2)
+
+        var fragmentLocation = findViewById<FrameLayout>(R.id.fragment_location)
+        var iAmTablet = fragmentLocation!=null //very important
+
+
 
 
         val dbHelper=ChatDatabaseHelper()
@@ -65,6 +71,27 @@ class ChatWindowActivity : Activity() {
 
 
         var listView=findViewById<ListView>(R.id.chatView)
+        listView.setOnItemClickListener{parent,view,position,id->
+            var string=chatList.get(position) //get it from message list
+            var dataToPass=Bundle()
+            dataToPass.putString("Message",string)
+            dataToPass.putLong("ID",id)
+
+            if(iAmTablet){
+                //tablet running
+
+                var newFragment=MessageFragment()
+                newFragment.arguments=dataToPass//bundle goes to fragment
+                var transition=getFragmentManager().beginTransaction()//how to load fragment
+                transition.replace(R.id.fragment_location,newFragment)//where to load and what to load
+                transition.commit()//make it run
+
+            }else{
+                //phone running
+            }
+        }
+
+
         var chatInputText=findViewById<EditText>(R.id.editText5)
         var sendButton=findViewById<Button>(R.id.sendButton)
         Log.i(ACTIVITY_NAME,"In onCreate()")
