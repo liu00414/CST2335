@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.widget.*
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.support.v4.app.Fragment
@@ -26,9 +27,11 @@ class ChatWindowActivity : Activity() {
     val ACTIVITY_NAME="ChatWindow"
 
     var chatList=ArrayList<String>()
-
-
-
+    lateinit var dbHelper:ChatDatabaseHelper
+    lateinit var db:SQLiteDatabase
+    lateinit var results: Cursor
+    var messagePosition=0
+    lateinit var messageAdapter:ChatAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +43,9 @@ class ChatWindowActivity : Activity() {
 
 
 
-        val dbHelper=ChatDatabaseHelper()
-        val db= dbHelper.writableDatabase
-        val results= db.query(TABLE_NAME, arrayOf("_id",KEY_MESSAGES), null,null,null,null,null,null)
+        dbHelper=ChatDatabaseHelper()
+        db= dbHelper.writableDatabase
+        results= db.query(TABLE_NAME, arrayOf("_id",KEY_MESSAGES), null,null,null,null,null,null)
         val numberRows=results.getCount()
 
         results.moveToFirst()//point to first row ro read
@@ -73,6 +76,7 @@ class ChatWindowActivity : Activity() {
         var listView=findViewById<ListView>(R.id.chatView)
         listView.setOnItemClickListener{parent,view,position,id->
             var string=chatList.get(position) //get it from message list
+            messagePosition=position
             var dataToPass=Bundle()
             dataToPass.putString("Message",string)
             dataToPass.putLong("ID",id)
@@ -81,6 +85,7 @@ class ChatWindowActivity : Activity() {
                 //tablet running
 
                 var newFragment=MessageFragment()
+                newFragment.amITablet=true
                 newFragment.arguments=dataToPass//bundle goes to fragment
                 var transition=getFragmentManager().beginTransaction()//how to load fragment
                 transition.replace(R.id.fragment_location,newFragment)//where to load and what to load
@@ -88,14 +93,18 @@ class ChatWindowActivity : Activity() {
 
             }else{
                 //phone running
+                var detailsActivity=Intent(this, MessageDetails::class.java)
+                detailsActivity.putExtras(dataToPass)//send data to next page
+                startActivityForResult(detailsActivity,35)
             }
         }
+
 
 
         var chatInputText=findViewById<EditText>(R.id.editText5)
         var sendButton=findViewById<Button>(R.id.sendButton)
         Log.i(ACTIVITY_NAME,"In onCreate()")
-        var messageAdapter = ChatAdapter( this )
+        messageAdapter = ChatAdapter( this )
 
 
 
@@ -109,6 +118,7 @@ class ChatWindowActivity : Activity() {
             newRow.put(KEY_MESSAGES,chatMsg)
 
             db.insert(TABLE_NAME,"",newRow)
+            results= db.query(TABLE_NAME, arrayOf("_id",KEY_MESSAGES), null,null,null,null,null,null)
 
 
 
@@ -118,6 +128,12 @@ class ChatWindowActivity : Activity() {
         })
 //
         listView.setAdapter(messageAdapter);
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode==35) {
+            deleteMessage(data?.getLongExtra("ID",0)!!)
+        }
     }
 
     inner class ChatAdapter(val ctx : Context):ArrayAdapter<String>(ctx,0){
@@ -142,7 +158,9 @@ class ChatWindowActivity : Activity() {
             return chatList.get(position)
         }
         override fun getItemId(position:Int):Long{
-            return 0
+            results.moveToPosition(position)
+            var index=results.getColumnIndex("_id")
+            return results.getInt(index).toLong()
         }
     }
 
@@ -200,7 +218,13 @@ class ChatWindowActivity : Activity() {
         Log.i(ACTIVITY_NAME,"In onDestroy()")
     }
 
+    fun deleteMessage(id:Long){
+        db.delete(TABLE_NAME,"_id=$id",null)
+        results= db.query(TABLE_NAME, arrayOf("_id",KEY_MESSAGES), null,null,null,null,null,null)
+        chatList.removeAt(messagePosition)
+        messageAdapter.notifyDataSetChanged()
 
+    }
 
 
 }
