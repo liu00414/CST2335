@@ -21,13 +21,15 @@ import android.widget.CompoundButton
 class ListItemsActivity : Activity() {
     val ACTIVITY_NAME="ListItemActivity"
     val REQUEST_IMAGE_CAPTURE = 1
+    lateinit var imageButton:ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_items)
         Log.i(ACTIVITY_NAME,"In onCreate()")
 
-        var imageButton = findViewById<ImageButton>(R.id.imageButton)
-        imageButton?.setOnClickListener(View.OnClickListener {
+         imageButton = findViewById<ImageButton>(R.id.imageButton)
+        imageButton.setOnClickListener(View.OnClickListener {
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 takePictureIntent.resolveActivity(packageManager)?.also {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
